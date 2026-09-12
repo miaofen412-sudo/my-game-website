@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圈圈叉叉｜我的遊戲樂園</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .game-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .game-container h1 {
+            margin-bottom: 10px;
+        }
+
+        .game-info {
+            margin: 20px 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .board {
+            width: 330px;
+            height: 330px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .cell {
+            border: none;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            font-size: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .cell:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.22);
+            transform: scale(1.03);
+        }
+
+        .cell:disabled {
+            cursor: default;
+        }
+
+        .restart-button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            background: #ffffff;
+            color: #222;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .restart-button:hover {
+            transform: scale(1.05);
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 500px) {
+            .board {
+                width: 280px;
+                height: 280px;
+            }
+
+            .cell {
+                font-size: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">🎮 我的遊戲樂園</div>
+
+        <nav>
+            <a href="../index.html">首頁</a>
+            <a href="../index.html#games">遊戲</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="game-container">
+
+            <h1>⭕❌ 圈圈叉叉</h1>
+
+            <p>你是 ⭕，電腦是 ❌</p>
+
+            <div class="game-info" id="status">
+                輪到你下棋
+            </div>
+
+            <div class="board" id="board"></div>
+
+            <button class="restart-button" onclick="startGame()">
+                🔄 重新開始
+            </button>
+
+            <br>
+
+            <a class="back-button" href="../index.html">
+                ← 回到遊戲首頁
+            </a>
+
+        </section>
+    </main>
+
+    <script>
+        const board = document.getElementById("board");
+        const statusText = document.getElementById("status");
+
+        let gameBoard = ["", "", "", "", "", "", "", ""];
+        let gameOver = false;
+
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        function startGame() {
+            gameBoard = ["", "", "", "", "", "", "", ""];
+            gameOver = false;
+
+            statusText.textContent = "輪到你下棋";
+
+            board.innerHTML = "";
+
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement("button");
+
+                cell.className = "cell";
+                cell.addEventListener("click", () => playerMove(i));
+
+                board.appendChild(cell);
+            }
+        }
+
+        function playerMove(index) {
+            if (gameOver || gameBoard[index] !== "") {
+                return;
+            }
+
+            gameBoard[index] = "⭕";
+
+            updateBoard();
+
+            if (checkWinner("⭕")) {
+                statusText.textContent = "🎉 恭喜你，你贏了！";
+                gameOver = true;
+                disableBoard();
+                return;
+            }
+
+            if (isDraw()) {
+                statusText.textContent = "🤝 平手！";
+                gameOver = true;
+                disableBoard();
+                return;
+            }
+
+            statusText.textContent = "🤖 電腦思考中...";
+
+            setTimeout(computerMove, 500);
+        }
+
+        function computerMove() {
+            if (gameOver) {
+                return;
+            }
+
+            const emptyCells = [];
+
+            for (let i = 0; i < gameBoard.length; i++) {
+                if (gameBoard[i] === "") {
+                    emptyCells.push(i);
+                }
+            }
+
+            if (emptyCells.length === 0) {
+                return;
+            }
+
+            const randomIndex =
+                emptyCells[Math.floor(Math.random() * emptyCells.length)];
+
+            gameBoard[randomIndex] = "❌";
+
+            updateBoard();
+
+            if (checkWinner("❌")) {
+                statusText.textContent = "😢 電腦贏了，再試一次吧！";
+                gameOver = true;
+                disableBoard();
+                return;
+            }
+
+            if (isDraw()) {
+                statusText.textContent = "🤝 平手！";
+                gameOver = true;
+                disableBoard();
+                return;
+            }
+
+            statusText.textContent = "輪到你下棋";
+        }
+
+        function updateBoard() {
+            const cells = document.querySelectorAll(".cell");
+
+            cells.forEach((cell, index) => {
+                cell.textContent = gameBoard[index];
+            });
+        }
+
+        function checkWinner(player) {
+            return winningCombinations.some(combination => {
+                return combination.every(index => {
+                    return gameBoard[index] === player;
+                });
+            });
+        }
+
+        function isDraw() {
+            return gameBoard.every(cell => cell !== "");
+        }
+
+        function disableBoard() {
+            const cells = document.querySelectorAll(".cell");
+
+            cells.forEach(cell => {
+                cell.disabled = true;
+            });
+        }
+
+        startGame();
+    </script>
+
+</body>
+</html>
