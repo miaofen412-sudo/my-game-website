@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>記憶翻牌｜我的遊戲樂園</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .memory-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 30px 80px;
+            text-align: center;
+        }
+
+        .memory-page h1 {
+            margin-bottom: 10px;
+        }
+
+        .memory-page p {
+            color: #b9c1df;
+        }
+
+        .memory-info {
+            margin: 25px 0;
+            font-size: 18px;
+        }
+
+        .memory-board {
+            max-width: 600px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .memory-card {
+            aspect-ratio: 1 / 1;
+            border: none;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 36px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.04);
+        }
+
+        .memory-card.flipped,
+        .memory-card.matched {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 11px 20px;
+            border-radius: 12px;
+            background: #ffffff;
+            color: #15182b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .memory-board {
+                gap: 10px;
+            }
+
+            .memory-card {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            🎮 我的遊戲樂園
+        </div>
+
+        <nav>
+            <a href="../index.html">首頁</a>
+            <a href="../index.html#games">遊戲</a>
+            <a href="../index.html#about">關於</a>
+        </nav>
+    </header>
+
+    <main class="memory-page">
+
+        <h1>🧠 記憶翻牌</h1>
+
+        <p>
+            找出所有相同的卡牌！
+        </p>
+
+        <div class="memory-info">
+            翻牌次數：<strong id="moves">0</strong>
+        </div>
+
+        <div class="memory-board" id="gameBoard"></div>
+
+        <button class="game-button" onclick="startGame()">
+            重新開始
+        </button>
+
+        <br>
+
+        <a class="back-button" href="../index.html">
+            ← 回到遊戲大廳
+        </a>
+
+    </main>
+
+    <script>
+    const cards = ["🍎", "🍎", "🍌", "🍌", "🍇", "🍇", "🍓", "🍓"];
+
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let moves = 0;
+    let matchedPairs = 0;
+
+    const gameBoard = document.getElementById("gameBoard");
+    const movesDisplay = document.getElementById("moves");
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function startGame() {
+        firstCard = null;
+        secondCard = null;
+        lockBoard = false;
+        moves = 0;
+        matchedPairs = 0;
+
+        movesDisplay.textContent = moves;
+        gameBoard.innerHTML = "";
+
+        const shuffledCards = shuffle([...cards]);
+
+        shuffledCards.forEach((symbol) => {
+            const card = document.createElement("button");
+
+            card.className = "memory-card";
+            card.textContent = "❓";
+            card.dataset.symbol = symbol;
+
+            card.addEventListener("click", () => flipCard(card));
+
+            gameBoard.appendChild(card);
+        });
+    }
+
+    function flipCard(card) {
+        if (
+            lockBoard ||
+            card === firstCard ||
+            card.classList.contains("matched")
+        ) {
+            return;
+        }
+
+        card.textContent = card.dataset.symbol;
+        card.classList.add("flipped");
+
+        if (!firstCard) {
+            firstCard = card;
+            return;
+        }
+
+        secondCard = card;
+        moves++;
+        movesDisplay.textContent = moves;
+
+        checkMatch();
+    }
+
+    function checkMatch() {
+        if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
+            firstCard.classList.add("matched");
+            secondCard.classList.add("matched");
+
+            matchedPairs++;
+
+            resetCards();
+
+            if (matchedPairs === cards.length / 2) {
+                setTimeout(() => {
+                    alert(`恭喜你完成遊戲！\n總共翻牌 ${moves} 次！`);
+                }, 300);
+            }
+
+            return;
+        }
+
+        lockBoard = true;
+
+        setTimeout(() => {
+            firstCard.textContent = "❓";
+            secondCard.textContent = "❓";
+
+            firstCard.classList.remove("flipped");
+            secondCard.classList.remove("flipped");
+
+            resetCards();
+        }, 800);
+    }
+
+    function resetCards() {
+        firstCard = null;
+        secondCard = null;
+        lockBoard = false;
+    }
+
+    startGame();
+</script>
+
+</body>
+</html>
