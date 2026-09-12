@@ -1,0 +1,245 @@
+/* =========================
+   整個網站的基本設定
+   ========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    background:
+        radial-gradient(circle at top left, #263b73 0%, transparent 35%),
+        radial-gradient(circle at bottom right, #4a245f 0%, transparent 35%),
+        #0d1020;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   頁首
+   ========================= */
+
+header {
+    width: 100%;
+    padding: 22px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(13, 16, 32, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+nav a {
+    color: #dfe5ff;
+    text-decoration: none;
+    margin-left: 28px;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #ffffff;
+}
+
+
+/* =========================
+   首頁主要區域
+   ========================= */
+
+.hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 70px 30px 35px;
+    text-align: center;
+}
+
+.hero h1 {
+    margin: 0 0 15px;
+    font-size: clamp(36px, 6vw, 64px);
+    line-height: 1.2;
+}
+
+.hero p {
+    margin: 0 auto;
+    color: #b9c1df;
+    font-size: 18px;
+}
+
+
+/* =========================
+   遊戲區域
+   ========================= */
+
+.games-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 25px 30px 80px;
+}
+
+.section-title {
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+
+/* =========================
+   遊戲卡片
+   ========================= */
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.game-card {
+    position: relative;
+    padding: 28px;
+    min-height: 210px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 22px;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+
+    transition:
+        transform 0.3s ease,
+        background 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.11);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.game-icon {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.game-card h3 {
+    margin: 0 0 8px;
+    font-size: 23px;
+}
+
+.game-card p {
+    margin: 0;
+    color: #aeb7d5;
+    line-height: 1.6;
+}
+
+
+/* =========================
+   遊戲按鈕
+   ========================= */
+
+.game-button {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 11px 20px;
+
+    border-radius: 12px;
+    background: #ffffff;
+    color: #15182b;
+
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+
+    transition: 0.25s;
+}
+
+.game-button:hover {
+    transform: scale(1.04);
+}
+
+
+/* =========================
+   尚未開放的遊戲
+   ========================= */
+
+.coming-soon {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 10px 16px;
+
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #929bbd;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   頁尾
+   ========================= */
+
+footer {
+    padding: 28px;
+    text-align: center;
+    color: #7f88aa;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================
+   手機版
+   ========================= */
+
+@media (max-width: 850px) {
+
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    header {
+        padding: 18px 5%;
+    }
+
+    nav a {
+        margin-left: 15px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav a {
+        margin: 0 8px;
+    }
+
+    .hero {
+        padding-top: 50px;
+    }
+
+    .game-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .games-section {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
