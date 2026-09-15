@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幸運骰子挑戰 - 我的遊戲樂園</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.9);
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            opacity: 0.9;
+        }
+
+        nav a:hover {
+            opacity: 1;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .back {
+            display: inline-block;
+            color: #cbd5e1;
+            text-decoration: none;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #cbd5e1;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .game-box {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 35px 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        }
+
+        .dice {
+            font-size: 130px;
+            line-height: 1;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+
+        .dice.rolling {
+            animation: roll 0.6s ease-in-out;
+        }
+
+        @keyframes roll {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            25% {
+                transform: rotate(15deg) scale(1.15);
+            }
+
+            50% {
+                transform: rotate(-15deg) scale(0.9);
+            }
+
+            75% {
+                transform: rotate(10deg) scale(1.1);
+            }
+
+            100% {
+                transform: rotate(0deg) scale(1);
+            }
+        }
+
+        .round-info {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #e2e8f0;
+        }
+
+        .round-info strong {
+            color: #facc15;
+        }
+
+        .score-area {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .score-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 18px;
+        }
+
+        .score-title {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .score-value {
+            font-size: 30px;
+            font-weight: bold;
+            color: #facc15;
+        }
+
+        button {
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 6px;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .roll-button {
+            background: #facc15;
+            color: #422006;
+        }
+
+        .restart-button {
+            background: #334155;
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            min-height: 30px;
+            margin: 20px 0 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 18px;
+            background: rgba(250, 204, 21, 0.12);
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result h2 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        .final-score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #facc15;
+            margin: 10px 0;
+        }
+
+        .result-text {
+            font-size: 18px;
+            color: #cbd5e1;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 15px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            nav a {
+                margin-left: 10px;
+                font-size: 14px;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            .dice {
+                font-size: 100px;
+            }
+
+            .score-area {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🎮 我的遊戲樂園</div>
+
+    <nav>
+        <a href="../index.html">首頁</a>
+        <a href="../index.html#games">遊戲</a>
+    </nav>
+</header>
+
+<div class="container">
+
+    <a class="back" href="../index.html">← 回到遊戲樂園</a>
+
+    <h1>🎲 幸運骰子挑戰</h1>
+
+    <p class="description">
+        連續擲 10 次骰子，看看你的幸運值有多高！
+    </p>
+
+    <div class="game-box">
+
+        <div class="round-info">
+            第 <strong id="round">0</strong> / 10 次
+        </div>
+
+        <div id="dice" class="dice">⚀</div>
+
+        <div class="score-area">
+
+            <div class="score-card">
+                <div class="score-title">本局總分</div>
+                <div id="score" class="score-value">0</div>
+            </div>
+
+            <div class="score-card">
+                <div class="score-title">最高紀錄</div>
+                <div id="highScore" class="score-value">0</div>
+            </div>
+
+        </div>
+
+        <button id="rollButton" class="roll-button" onclick="rollDice()">
+            🎲 擲骰子
+        </button>
+
+        <button class="restart-button" onclick="restartGame()">
+            🔄 重新開始
+        </button>
+
+        <div id="message" class="message">
+            準備好了嗎？開始挑戰吧！
+        </div>
+
+        <div id="result" class="result">
+
+            <h2 id="resultTitle">🎉 挑戰完成！</h2>
+
+            <div class="final-score" id="finalScore">
+                0
+            </div>
+
+            <div class="result-text" id="resultText">
+                繼續挑戰看看！
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const diceFaces = [
+        "⚀",
+        "⚁",
+        "⚂",
+        "⚃",
+        "⚄",
+        "⚅"
+    ];
+
+    let round = 0;
+    let score = 0;
+    let highScore = Number(localStorage.getItem("diceHighScore")) || 0;
+    let rolling = false;
+
+    const diceElement = document.getElementById("dice");
+    const roundElement = document.getElementById("round");
+    const scoreElement = document.getElementById("score");
+    const highScoreElement = document.getElementById("highScore");
+    const messageElement = document.getElementById("message");
+    const resultElement = document.getElementById("result");
+    const resultTitleElement = document.getElementById("resultTitle");
+    const finalScoreElement = document.getElementById("finalScore");
+    const resultTextElement = document.getElementById("resultText");
+    const rollButton = document.getElementById("rollButton");
+
+    highScoreElement.textContent = highScore;
+
+    function rollDice() {
+
+        if (rolling || round >= 10) {
+            return;
+        }
+
+        rolling = true;
+        rollButton.disabled = true;
+
+        diceElement.classList.remove("rolling");
+
+        // 讓動畫重新開始
+        void diceElement.offsetWidth;
+
+        diceElement.classList.add("rolling");
+
+        messageElement.textContent = "🎲 骰子滾動中...";
+
+        setTimeout(() => {
+
+            const number = Math.floor(Math.random() * 6) + 1;
+
+            diceElement.textContent = diceFaces[number - 1];
+
+            round++;
+            score += number;
+
+            roundElement.textContent = round;
+            scoreElement.textContent = score;
+
+            if (number === 6) {
+                messageElement.textContent = "🎉 太幸運了！你擲出了 6！";
+            } else if (number === 5) {
+                messageElement.textContent = "🌟 很棒！你擲出了 5！";
+            } else if (number === 1) {
+                messageElement.textContent = "😆 擲出了 1，再接再厲！";
+            } else {
+                messageElement.textContent = `🎲 你擲出了 ${number}！`;
+            }
+
+            rolling = false;
+
+            if (round >= 10) {
+                finishGame();
+            } else {
+                rollButton.disabled = false;
+            }
+
+        }, 600);
+    }
+
+    function finishGame() {
+
+        rollButton.disabled = true;
+
+        if (score > highScore) {
+            highScore = score;
+
+            localStorage.setItem(
+                "diceHighScore",
+                highScore
+            );
+
+            highScoreElement.textContent = highScore;
+
+            resultTitleElement.textContent = "🏆 新紀錄！";
+        } else {
+            resultTitleElement.textContent = "🎉 挑戰完成！";
+        }
+
+        finalScoreElement.textContent = score + " 分";
+
+        if (score >= 40) {
+
+            resultTextElement.textContent =
+                "👑 幸運王者！你的運氣真的太好了！";
+
+        } else if (score >= 30) {
+
+            resultTextElement.textContent =
+                "🌟 運氣不錯！表現非常棒！";
+
+        } else if (score >= 20) {
+
+            resultTextElement.textContent =
+                "🙂 再接再厲！下一局可能更高分！";
+
+        } else {
+
+            resultTextElement.textContent =
+                "😅 今天運氣比較普通，再挑戰一次吧！";
+        }
+
+        resultElement.classList.add("show");
+
+        messageElement.textContent =
+            "🎊 10 次挑戰完成！看看你的最終成績吧！";
+    }
+
+    function restartGame() {
+
+        round = 0;
+        score = 0;
+        rolling = false;
+
+        roundElement.textContent = "0";
+        scoreElement.textContent = "0";
+
+        diceElement.textContent = "⚀";
+        diceElement.classList.remove("rolling");
+
+        messageElement.textContent =
+            "準備好了嗎？開始挑戰吧！";
+
+        resultElement.classList.remove("show");
+
+        rollButton.disabled = false;
+    }
+
+</script>
+
+</body>
+</html>
