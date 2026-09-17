@@ -1,0 +1,1584 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>經典接龍</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, "Microsoft JhengHei", sans-serif;
+    background: #087f3f;
+    color: white;
+}
+
+h1 {
+    text-align: center;
+    margin: 0 0 15px;
+}
+
+.info {
+    max-width: 1100px;
+    margin: 0 auto 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.info span {
+    background: rgba(0,0,0,0.25);
+    padding: 8px 14px;
+    border-radius: 8px;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 15px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+#restart {
+    background: #ffd54f;
+}
+
+/* =========================
+   遊戲區
+========================= */
+
+.game {
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* =========================
+   上方區
+========================= */
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.left-top,
+.right-top {
+    display: flex;
+    gap: 10px;
+}
+
+.slot {
+    width: 76px;
+    height: 106px;
+    border-radius: 8px;
+}
+
+/* =========================
+   牌
+========================= */
+
+.card {
+    width: 76px;
+    height: 106px;
+    background: white;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 3px 7px rgba(0,0,0,0.35);
+    cursor: pointer;
+    user-select: none;
+    color: #111;
+    overflow: hidden;
+}
+
+.card.red {
+    color: #d00000;
+}
+
+.card.black {
+    color: #111;
+}
+
+.card.selected {
+    outline: 4px solid #ffd54f;
+    z-index: 1000;
+}
+
+/* =========================
+   牌背
+========================= */
+
+.card.back {
+    background-color: #174ea6;
+    border: 4px solid white;
+}
+
+.card.back::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 2px solid #dce8ff;
+    border-radius: 4px;
+    background:
+        repeating-linear-gradient(
+            45deg,
+            transparent 0,
+            transparent 5px,
+            rgba(255,255,255,0.2) 5px,
+            rgba(255,255,255,0.2) 7px
+        );
+}
+
+/* =========================
+   左上角
+========================= */
+
+.corner {
+    position: absolute;
+    top: 4px;
+    left: 5px;
+    width: 25px;
+    text-align: center;
+    font-weight: bold;
+    line-height: 17px;
+    z-index: 5;
+}
+
+.rank {
+    font-size: 18px;
+}
+
+.suit-small {
+    font-size: 15px;
+}
+
+/* =========================
+   A
+========================= */
+
+.ace {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 39px;
+    text-align: center;
+    font-size: 38px;
+}
+
+/* =========================
+   2～10
+========================= */
+
+.pips {
+    position: absolute;
+    top: 25px;
+    left: 9px;
+    right: 9px;
+    bottom: 8px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(5, 1fr);
+    align-items: center;
+    justify-items: center;
+}
+
+.pip {
+    font-size: 19px;
+    line-height: 1;
+}
+
+/* =========================
+   J Q K
+========================= */
+
+.face {
+    position: absolute;
+    top: 28px;
+    left: 13px;
+    right: 13px;
+    bottom: 9px;
+
+    border: 2px solid currentColor;
+    border-radius: 5px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.face-rank {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.face-suit {
+    font-size: 25px;
+}
+
+/* =========================
+   空位置
+========================= */
+
+.empty {
+    width: 76px;
+    height: 106px;
+    border: 2px dashed rgba(255,255,255,0.5);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(255,255,255,0.55);
+    font-size: 25px;
+}
+
+/* =========================
+   七欄
+========================= */
+
+.tableau {
+    display: grid;
+    grid-template-columns: repeat(7, 76px);
+    gap: 10px;
+    justify-content: center;
+}
+
+.column {
+    width: 76px;
+    min-height: 500px;
+    position: relative;
+}
+
+.column-card {
+    position: absolute;
+    left: 0;
+}
+
+/* =========================
+   訊息
+========================= */
+
+.message {
+    text-align: center;
+    min-height: 28px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* =========================
+   手機
+========================= */
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 8px;
+    }
+
+    .card,
+    .slot,
+    .empty {
+        width: 52px;
+        height: 74px;
+    }
+
+    .tableau {
+        grid-template-columns: repeat(7, 52px);
+        gap: 4px;
+    }
+
+    .column {
+        width: 52px;
+        min-height: 430px;
+    }
+
+    .rank {
+        font-size: 14px;
+    }
+
+    .suit-small {
+        font-size: 12px;
+    }
+
+    .pip {
+        font-size: 13px;
+    }
+
+    .ace {
+        font-size: 27px;
+        top: 28px;
+    }
+
+    .face {
+        top: 20px;
+        left: 8px;
+        right: 8px;
+        bottom: 6px;
+    }
+
+    .face-rank {
+        font-size: 23px;
+    }
+
+    .face-suit {
+        font-size: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<h1>🃏 經典接龍</h1>
+
+<div class="info">
+    <span>步數：<b id="moves">0</b></span>
+    <span>牌庫：<b id="stockCount">24</b> 張</span>
+    <button id="restart">重新開始</button>
+</div>
+
+<div class="game">
+
+    <!-- 上方牌區 -->
+    <div class="top">
+
+        <div class="left-top">
+            <div id="stockArea"></div>
+            <div id="wasteArea"></div>
+        </div>
+
+        <div class="right-top" id="foundationArea"></div>
+
+    </div>
+
+    <!-- 七欄 -->
+    <div id="tableau" class="tableau"></div>
+
+    <div id="message" class="message"></div>
+
+</div>
+
+<script>
+
+/* =========================================
+   基本資料
+========================================= */
+
+const SUITS = [
+    { symbol: "♠", color: "black" },
+    { symbol: "♥", color: "red" },
+    { symbol: "♦", color: "red" },
+    { symbol: "♣", color: "black" }
+];
+
+const RANKS = [
+    "",
+    "A",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "J",
+    "Q",
+    "K"
+];
+
+let stock = [];
+let waste = [];
+
+let tableau = [
+    [], [], [], [], [], [], []
+];
+
+let foundation = [
+    [], [], [], []
+];
+
+let selected = null;
+let moves = 0;
+
+
+/* =========================================
+   建立牌
+========================================= */
+
+function createDeck() {
+
+    const deck = [];
+
+    for (let suit = 0; suit < 4; suit++) {
+
+        for (let value = 1; value <= 13; value++) {
+
+            deck.push({
+                id: Math.random().toString(36) + Date.now() + suit + value,
+                suit: suit,
+                value: value,
+                rank: RANKS[value],
+                symbol: SUITS[suit].symbol,
+                color: SUITS[suit].color,
+                faceUp: false
+            });
+
+        }
+
+    }
+
+    return deck;
+}
+
+
+/* =========================================
+   洗牌
+========================================= */
+
+function shuffle(deck) {
+
+    for (let i = deck.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        const temp = deck[i];
+
+        deck[i] = deck[j];
+
+        deck[j] = temp;
+    }
+
+}
+
+
+/* =========================================
+   開始遊戲
+========================================= */
+
+function newGame() {
+
+    let deck = createDeck();
+
+    shuffle(deck);
+
+    stock = [];
+    waste = [];
+
+    tableau = [
+        [], [], [], [], [], [], []
+    ];
+
+    foundation = [
+        [], [], [], []
+    ];
+
+    selected = null;
+
+    moves = 0;
+
+
+    /* 發 7 欄 */
+
+    for (let column = 0; column < 7; column++) {
+
+        for (let row = 0; row <= column; row++) {
+
+            const card = deck.pop();
+
+            card.faceUp = (row === column);
+
+            tableau[column].push(card);
+        }
+
+    }
+
+
+    /* 剩餘 24 張 */
+
+    stock = deck;
+
+
+    render();
+
+    message("請開始遊戲");
+}
+
+
+/* =========================================
+   建立牌面
+========================================= */
+
+function makeCardElement(card, type, column, index) {
+
+    const el = document.createElement("div");
+
+    el.className = "card";
+
+    el.classList.add(card.color);
+
+    el.dataset.id = card.id;
+
+
+    /* 暗牌 */
+
+    if (!card.faceUp) {
+
+        el.classList.add("back");
+
+        el.addEventListener("click", function(event) {
+
+            event.stopPropagation();
+
+            if (
+                type === "tableau" &&
+                index === tableau[column].length - 1
+            ) {
+
+                card.faceUp = true;
+
+                moves++;
+
+                selected = null;
+
+                render();
+
+            }
+
+        });
+
+        return el;
+    }
+
+
+    /* 左上角 */
+
+    const corner = document.createElement("div");
+
+    corner.className = "corner";
+
+    corner.innerHTML =
+        '<div class="rank">' +
+        card.rank +
+        '</div>' +
+        '<div class="suit-small">' +
+        card.symbol +
+        '</div>';
+
+    el.appendChild(corner);
+
+
+    /* A */
+
+    if (card.value === 1) {
+
+        const ace = document.createElement("div");
+
+        ace.className = "ace";
+
+        ace.textContent = card.symbol;
+
+        el.appendChild(ace);
+
+    }
+
+
+    /* 2～10 */
+
+    else if (card.value >= 2 && card.value <= 10) {
+
+        const pips = document.createElement("div");
+
+        pips.className = "pips";
+
+        const pattern = getPips(card.value);
+
+        pattern.forEach(pos => {
+
+            const pip = document.createElement("div");
+
+            pip.className = "pip";
+
+            pip.textContent = card.symbol;
+
+            pip.style.gridColumn = pos.col;
+
+            pip.style.gridRow = pos.row;
+
+            pips.appendChild(pip);
+
+        });
+
+        el.appendChild(pips);
+
+    }
+
+
+    /* J Q K */
+
+    else {
+
+        const face = document.createElement("div");
+
+        face.className = "face";
+
+        const rank = document.createElement("div");
+
+        rank.className = "face-rank";
+
+        rank.textContent = card.rank;
+
+        const suit = document.createElement("div");
+
+        suit.className = "face-suit";
+
+        suit.textContent = card.symbol;
+
+        face.appendChild(rank);
+
+        face.appendChild(suit);
+
+        el.appendChild(face);
+    }
+
+
+    /* 選取狀態 */
+
+    if (
+        selected &&
+        selected.type === "tableau" &&
+        selected.column === column &&
+        index >= selected.index
+    ) {
+
+        el.classList.add("selected");
+
+    }
+
+
+    /* 點擊 */
+
+    el.addEventListener("click", function(event) {
+
+        event.stopPropagation();
+
+        cardClick(type, column, index);
+
+    });
+
+
+    return el;
+}
+
+
+/* =========================================
+   2～10 花色位置
+========================================= */
+
+function getPips(value) {
+
+    const L = "1";
+    const R = "2";
+
+    const result = [];
+
+    function add(row, col) {
+
+        result.push({
+            row: String(row),
+            col: col === L ? "1" : "2"
+        });
+
+    }
+
+
+    if (value === 2) {
+
+        add(1, L);
+        add(5, R);
+
+    }
+
+    else if (value === 3) {
+
+        add(1, L);
+        add(3, "1");
+        add(5, R);
+
+    }
+
+    else if (value === 4) {
+
+        add(1, L);
+        add(1, R);
+        add(5, L);
+        add(5, R);
+
+    }
+
+    else if (value === 5) {
+
+        add(1, L);
+        add(1, R);
+        add(3, "1");
+        add(5, L);
+        add(5, R);
+
+    }
+
+    else if (value === 6) {
+
+        add(1, L);
+        add(1, R);
+        add(3, L);
+        add(3, R);
+        add(5, L);
+        add(5, R);
+
+    }
+
+    else if (value === 7) {
+
+        add(1, L);
+        add(1, R);
+        add(2, L);
+        add(2, R);
+        add(3, "1");
+        add(4, L);
+        add(4, R);
+
+    }
+
+    else if (value === 8) {
+
+        add(1, L);
+        add(1, R);
+        add(2, L);
+        add(2, R);
+        add(4, L);
+        add(4, R);
+        add(5, L);
+        add(5, R);
+
+    }
+
+    else if (value === 9) {
+
+        add(1, L);
+        add(1, R);
+        add(2, L);
+        add(2, R);
+        add(3, "1");
+        add(4, L);
+        add(4, R);
+        add(5, L);
+        add(5, R);
+
+    }
+
+    else if (value === 10) {
+
+        add(1, L);
+        add(1, R);
+        add(2, L);
+        add(2, R);
+        add(3, L);
+        add(3, R);
+        add(4, L);
+        add(4, R);
+        add(5, L);
+        add(5, R);
+
+    }
+
+    return result;
+}
+
+
+/* =========================================
+   點擊牌
+========================================= */
+
+function cardClick(type, column, index) {
+
+
+    /* 廢牌 */
+
+    if (type === "waste") {
+
+        if (waste.length === 0) return;
+
+        if (
+            selected &&
+            selected.type === "waste"
+        ) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+        selected = {
+            type: "waste"
+        };
+
+        render();
+
+        return;
+    }
+
+
+    /* 桌面牌 */
+
+    const col = tableau[column];
+
+    const card = col[index];
+
+
+    /* 暗牌 */
+
+    if (!card.faceUp) {
+
+        if (index === col.length - 1) {
+
+            card.faceUp = true;
+
+            moves++;
+
+            render();
+
+        }
+
+        return;
+    }
+
+
+    /* 已選牌 */
+
+    if (selected) {
+
+        moveSelected(column);
+
+        return;
+    }
+
+
+    /* 選取牌組 */
+
+    if (validSequence(column, index)) {
+
+        selected = {
+            type: "tableau",
+            column: column,
+            index: index
+        };
+
+        render();
+
+    }
+
+}
+
+
+/* =========================================
+   檢查一串牌
+========================================= */
+
+function validSequence(column, start) {
+
+    const col = tableau[column];
+
+    for (let i = start; i < col.length; i++) {
+
+        if (!col[i].faceUp) {
+
+            return false;
+        }
+
+        if (i > start) {
+
+            const previous = col[i - 1];
+
+            const current = col[i];
+
+            if (
+                previous.value !== current.value + 1 ||
+                previous.color === current.color
+            ) {
+
+                return false;
+            }
+
+        }
+
+    }
+
+    return true;
+}
+
+
+/* =========================================
+   移動選取牌
+========================================= */
+
+function moveSelected(targetColumn) {
+
+    if (!selected) return;
+
+
+    /* 從廢牌 */
+
+    if (selected.type === "waste") {
+
+        if (waste.length === 0) return;
+
+        const moving = waste[waste.length - 1];
+
+        if (!canPlace(moving, targetColumn)) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+        waste.pop();
+
+        tableau[targetColumn].push(moving);
+
+        moves++;
+
+        selected = null;
+
+        render();
+
+        return;
+    }
+
+
+    /* 從桌面 */
+
+    if (selected.type === "tableau") {
+
+        const sourceColumn = selected.column;
+
+        if (sourceColumn === targetColumn) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+
+        const source = tableau[sourceColumn];
+
+        const moving = source.slice(selected.index);
+
+
+        if (!canPlace(moving[0], targetColumn)) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+
+        source.splice(
+            selected.index,
+            moving.length
+        );
+
+
+        tableau[targetColumn].push(...moving);
+
+
+        /* 翻開來源最後一張 */
+
+        if (source.length > 0) {
+
+            const last =
+                source[source.length - 1];
+
+            if (!last.faceUp) {
+
+                last.faceUp = true;
+
+            }
+
+        }
+
+
+        moves++;
+
+        selected = null;
+
+        render();
+
+    }
+
+}
+
+
+/* =========================================
+   判斷能否放到欄位
+========================================= */
+
+function canPlace(card, targetColumn) {
+
+    const target = tableau[targetColumn];
+
+
+    /* 空欄只能 K */
+
+    if (target.length === 0) {
+
+        return card.value === 13;
+    }
+
+
+    const top =
+        target[target.length - 1];
+
+
+    if (!top.faceUp) {
+
+        return false;
+    }
+
+
+    return (
+        top.color !== card.color &&
+        top.value === card.value + 1
+    );
+}
+
+
+/* =========================================
+   收牌
+========================================= */
+
+function foundationClick(suitIndex) {
+
+    if (!selected) return;
+
+
+    let card = null;
+
+
+    /* 廢牌 */
+
+    if (selected.type === "waste") {
+
+        if (waste.length === 0) return;
+
+        card = waste[waste.length - 1];
+
+    }
+
+
+    /* 桌面 */
+
+    else {
+
+        const col =
+            tableau[selected.column];
+
+        if (
+            selected.index !==
+            col.length - 1
+        ) {
+
+            message("收牌區一次只能放一張牌");
+
+            return;
+        }
+
+        card = col[col.length - 1];
+
+    }
+
+
+    if (card.suit !== suitIndex) {
+
+        message("花色必須相同");
+
+        return;
+    }
+
+
+    const pile =
+        foundation[suitIndex];
+
+
+    if (pile.length === 0) {
+
+        if (card.value !== 1) {
+
+            message("收牌區必須從 A 開始");
+
+            return;
+        }
+
+    }
+
+    else {
+
+        const top =
+            pile[pile.length - 1];
+
+        if (
+            card.value !==
+            top.value + 1
+        ) {
+
+            message("必須按照 A、2、3……K 排列");
+
+            return;
+        }
+
+    }
+
+
+    /* 移除 */
+
+    if (selected.type === "waste") {
+
+        waste.pop();
+
+    }
+
+    else {
+
+        const col =
+            tableau[selected.column];
+
+        col.pop();
+
+        if (col.length > 0) {
+
+            col[col.length - 1].faceUp = true;
+
+        }
+
+    }
+
+
+    pile.push(card);
+
+    moves++;
+
+    selected = null;
+
+    render();
+
+    checkWin();
+}
+
+
+/* =========================================
+   抽牌
+========================================= */
+
+function drawStock() {
+
+    selected = null;
+
+
+    if (stock.length > 0) {
+
+        const card = stock.pop();
+
+        card.faceUp = true;
+
+        waste.push(card);
+
+        moves++;
+
+    }
+
+    else if (waste.length > 0) {
+
+        while (waste.length > 0) {
+
+            const card = waste.pop();
+
+            card.faceUp = false;
+
+            stock.push(card);
+
+        }
+
+        moves++;
+
+    }
+
+
+    render();
+}
+
+
+/* =========================================
+   Render
+========================================= */
+
+function render() {
+
+    document.getElementById("moves").textContent =
+        moves;
+
+    document.getElementById("stockCount").textContent =
+        stock.length;
+
+
+    /* -------------------------
+       牌庫
+    ------------------------- */
+
+    const stockArea =
+        document.getElementById("stockArea");
+
+    stockArea.innerHTML = "";
+
+
+    if (stock.length > 0) {
+
+        const stockCard =
+            document.createElement("div");
+
+        stockCard.className =
+            "card back";
+
+        stockCard.onclick =
+            drawStock;
+
+        stockArea.appendChild(stockCard);
+
+    }
+    else {
+
+        const empty =
+            document.createElement("div");
+
+        empty.className =
+            "empty";
+
+        empty.textContent = "↻";
+
+        empty.onclick =
+            drawStock;
+
+        stockArea.appendChild(empty);
+
+    }
+
+
+    /* -------------------------
+       廢牌
+    ------------------------- */
+
+    const wasteArea =
+        document.getElementById("wasteArea");
+
+    wasteArea.innerHTML = "";
+
+
+    if (waste.length > 0) {
+
+        const card =
+            waste[waste.length - 1];
+
+        wasteArea.appendChild(
+            makeCardElement(
+                card,
+                "waste",
+                0,
+                waste.length - 1
+            )
+        );
+
+    }
+    else {
+
+        const empty =
+            document.createElement("div");
+
+        empty.className =
+            "empty";
+
+        wasteArea.appendChild(empty);
+
+    }
+
+
+    /* -------------------------
+       收牌區
+    ------------------------- */
+
+    const foundationArea =
+        document.getElementById("foundationArea");
+
+    foundationArea.innerHTML = "";
+
+
+    for (let suit = 0; suit < 4; suit++) {
+
+        const box =
+            document.createElement("div");
+
+        box.className = "slot";
+
+        box.onclick = function(event) {
+
+            event.stopPropagation();
+
+            foundationClick(suit);
+
+        };
+
+
+        const pile =
+            foundation[suit];
+
+
+        if (pile.length === 0) {
+
+            const empty =
+                document.createElement("div");
+
+            empty.className =
+                "empty";
+
+            empty.textContent =
+                SUITS[suit].symbol;
+
+            box.appendChild(empty);
+
+        }
+        else {
+
+            const card =
+                pile[pile.length - 1];
+
+            box.appendChild(
+                makeCardElement(
+                    card,
+                    "foundation",
+                    suit,
+                    pile.length - 1
+                )
+            );
+
+        }
+
+
+        foundationArea.appendChild(box);
+
+    }
+
+
+    /* -------------------------
+       七欄
+    ------------------------- */
+
+    const tableauElement =
+        document.getElementById("tableau");
+
+    tableauElement.innerHTML = "";
+
+
+    for (
+        let column = 0;
+        column < 7;
+        column++
+    ) {
+
+        const columnElement =
+            document.createElement("div");
+
+        columnElement.className =
+            "column";
+
+
+        const cards =
+            tableau[column];
+
+
+        if (cards.length === 0) {
+
+            const empty =
+                document.createElement("div");
+
+            empty.className =
+                "empty";
+
+            empty.textContent = "K";
+
+            empty.onclick = function(event) {
+
+                event.stopPropagation();
+
+                if (selected) {
+
+                    moveSelected(column);
+
+                }
+
+            };
+
+            columnElement.appendChild(empty);
+
+        }
+
+
+        for (
+            let index = 0;
+            index < cards.length;
+            index++
+        ) {
+
+            const card =
+                cards[index];
+
+            const cardElement =
+                makeCardElement(
+                    card,
+                    "tableau",
+                    column,
+                    index
+                );
+
+
+            cardElement.classList.add(
+                "column-card"
+            );
+
+
+            /*
+                暗牌距離較小，
+                明牌距離較大，
+                讓牌面可以清楚看到。
+            */
+
+            let top = 0;
+
+            for (
+                let i = 0;
+                i < index;
+                i++
+            ) {
+
+                if (cards[i].faceUp) {
+
+                    top += 30;
+
+                }
+                else {
+
+                    top += 18;
+
+                }
+
+            }
+
+
+            cardElement.style.top =
+                top + "px";
+
+
+            columnElement.appendChild(
+                cardElement
+            );
+
+        }
+
+
+        tableauElement.appendChild(
+            columnElement
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   勝利
+========================================= */
+
+function checkWin() {
+
+    let total = 0;
+
+    for (const pile of foundation) {
+
+        total += pile.length;
+
+    }
+
+    if (total === 52) {
+
+        message(
+            "🎉 恭喜！你完成了整副接龍！"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   訊息
+========================================= */
+
+function message(text) {
+
+    document.getElementById(
+        "message"
+    ).textContent = text;
+
+}
+
+
+/* =========================================
+   重新開始
+========================================= */
+
+document.getElementById(
+    "restart"
+).onclick = newGame;
+
+
+/* =========================================
+   啟動
+========================================= */
+
+newGame();
+
+</script>
+
+</body>
+</html>
+```
