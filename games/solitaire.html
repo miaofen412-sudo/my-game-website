@@ -14,8 +14,9 @@
 body {
     margin: 0;
     padding: 20px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #176b45, #0b422c);
     font-family: Arial, "Microsoft JhengHei", sans-serif;
-    background: #087f3f;
     color: white;
 }
 
@@ -24,85 +25,84 @@ h1 {
     margin: 0 0 15px;
 }
 
-.info {
+.info-bar {
     max-width: 1100px;
     margin: 0 auto 15px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.info span {
-    background: rgba(0,0,0,0.25);
-    padding: 8px 14px;
-    border-radius: 8px;
 }
 
 button {
-    border: none;
+    border: 0;
     border-radius: 8px;
-    padding: 9px 15px;
-    font-size: 15px;
+    padding: 9px 18px;
+    background: white;
+    color: #176b45;
+    font-weight: bold;
+    font-size: 16px;
     cursor: pointer;
 }
 
 button:hover {
-    opacity: 0.85;
+    background: #eeeeee;
 }
-
-#restart {
-    background: #ffd54f;
-}
-
-/* =========================
-   遊戲區
-========================= */
 
 .game {
     max-width: 1100px;
     margin: auto;
 }
 
-/* =========================
-   上方區
-========================= */
-
-.top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
+/* 上方牌區 */
+.top-area {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-bottom: 25px;
 }
 
-.left-top,
-.right-top {
-    display: flex;
+.pile {
+    height: 105px;
+    border: 2px dashed rgba(255,255,255,.35);
+    border-radius: 8px;
+    background: rgba(255,255,255,.10);
+    position: relative;
+}
+
+.stock,
+.waste,
+.foundation {
+    cursor: pointer;
+}
+
+/* 下方七欄 */
+.tableau {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
     gap: 10px;
 }
 
-.slot {
-    width: 76px;
-    height: 106px;
+.column {
+    min-height: 500px;
+    position: relative;
+    border: 2px dashed rgba(255,255,255,.25);
     border-radius: 8px;
+    background: rgba(255,255,255,.08);
 }
 
-/* =========================
-   牌
-========================= */
-
+/* 牌 */
 .card {
-    width: 76px;
-    height: 106px;
+    width: 100%;
+    height: 96px;
+    position: absolute;
+    left: 0;
     background: white;
-    border-radius: 8px;
-    position: relative;
-    box-shadow: 0 3px 7px rgba(0,0,0,0.35);
+    border: 1px solid #aaa;
+    border-radius: 7px;
+    color: #111;
     cursor: pointer;
     user-select: none;
-    color: #111;
-    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,.25);
 }
 
 .card.red {
@@ -113,230 +113,133 @@ button:hover {
     color: #111;
 }
 
-.card.selected {
-    outline: 4px solid #ffd54f;
-    z-index: 1000;
-}
-
-/* =========================
-   牌背
-========================= */
-
+/* 背面 */
 .card.back {
-    background-color: #174ea6;
-    border: 4px solid white;
-}
-
-.card.back::after {
-    content: "";
-    position: absolute;
-    inset: 5px;
-    border: 2px solid #dce8ff;
-    border-radius: 4px;
     background:
         repeating-linear-gradient(
             45deg,
-            transparent 0,
-            transparent 5px,
-            rgba(255,255,255,0.2) 5px,
-            rgba(255,255,255,0.2) 7px
+            #174f91,
+            #174f91 7px,
+            #276bb5 7px,
+            #276bb5 14px
         );
+    border: 3px solid white;
 }
 
-/* =========================
-   左上角
-========================= */
+/* 選取中的牌 */
+.card.selected {
+    outline: 4px solid #ffd700;
+}
 
+/* 左上角 */
 .corner {
     position: absolute;
     top: 4px;
-    left: 5px;
-    width: 25px;
+    left: 6px;
     text-align: center;
     font-weight: bold;
+    font-size: 17px;
     line-height: 17px;
-    z-index: 5;
 }
 
-.rank {
-    font-size: 18px;
-}
-
-.suit-small {
-    font-size: 15px;
-}
-
-/* =========================
-   A
-========================= */
-
-.ace {
+/* A */
+.ace-symbol {
     position: absolute;
-    left: 0;
-    right: 0;
-    top: 39px;
-    text-align: center;
-    font-size: 38px;
+    inset: 27px 10px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 45px;
 }
 
-/* =========================
-   2～10
-========================= */
+/* J Q K */
+.face-symbol {
+    position: absolute;
+    inset: 27px 10px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+}
 
+/* 2~10 */
 .pips {
     position: absolute;
-    top: 25px;
-    left: 9px;
-    right: 9px;
+    top: 28px;
     bottom: 8px;
+    left: 8px;
+    right: 8px;
 
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: repeat(5, 1fr);
+
     align-items: center;
     justify-items: center;
+
+    font-size: 17px;
+    line-height: 17px;
+    font-weight: bold;
 }
 
 .pip {
-    font-size: 19px;
-    line-height: 1;
-}
-
-/* =========================
-   J Q K
-========================= */
-
-.face {
-    position: absolute;
-    top: 28px;
-    left: 13px;
-    right: 13px;
-    bottom: 9px;
-
-    border: 2px solid currentColor;
-    border-radius: 5px;
-
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-.face-rank {
-    font-size: 32px;
-    font-weight: bold;
+/* 讓中間花色置中 */
+.pips .middle {
+    grid-column: 1 / 3;
 }
 
-.face-suit {
-    font-size: 25px;
-}
-
-/* =========================
-   空位置
-========================= */
-
-.empty {
-    width: 76px;
-    height: 106px;
-    border: 2px dashed rgba(255,255,255,0.5);
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: rgba(255,255,255,0.55);
-    font-size: 25px;
-}
-
-/* =========================
-   七欄
-========================= */
-
-.tableau {
-    display: grid;
-    grid-template-columns: repeat(7, 76px);
-    gap: 10px;
-    justify-content: center;
-}
-
-.column {
-    width: 76px;
-    min-height: 500px;
-    position: relative;
-}
-
-.column-card {
+/* 空牌堆 */
+.placeholder {
     position: absolute;
-    left: 0;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    opacity: .35;
 }
 
-/* =========================
-   訊息
-========================= */
-
-.message {
-    text-align: center;
-    min-height: 28px;
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-/* =========================
-   手機
-========================= */
-
-@media (max-width: 700px) {
+@media (max-width: 800px) {
 
     body {
         padding: 8px;
     }
 
-    .card,
-    .slot,
-    .empty {
-        width: 52px;
-        height: 74px;
+    .top-area,
+    .tableau {
+        gap: 5px;
     }
 
-    .tableau {
-        grid-template-columns: repeat(7, 52px);
-        gap: 4px;
+    .card {
+        height: 78px;
     }
 
     .column {
-        width: 52px;
-        min-height: 430px;
+        min-height: 400px;
     }
 
-    .rank {
-        font-size: 14px;
-    }
-
-    .suit-small {
-        font-size: 12px;
-    }
-
-    .pip {
+    .corner {
         font-size: 13px;
+        line-height: 13px;
     }
 
-    .ace {
-        font-size: 27px;
-        top: 28px;
+    .pips {
+        font-size: 12px;
+        line-height: 12px;
+        top: 24px;
     }
 
-    .face {
-        top: 20px;
-        left: 8px;
-        right: 8px;
-        bottom: 6px;
+    .ace-symbol {
+        font-size: 34px;
     }
 
-    .face-rank {
-        font-size: 23px;
-    }
-
-    .face-suit {
-        font-size: 18px;
+    .face-symbol {
+        font-size: 36px;
     }
 }
 </style>
@@ -344,83 +247,92 @@ button:hover {
 
 <body>
 
-<h1>🃏 經典接龍</h1>
+<h1>♠ 經典接龍 ♥</h1>
 
-<div class="info">
-    <span>步數：<b id="moves">0</b></span>
-    <span>牌庫：<b id="stockCount">24</b> 張</span>
+<div class="info-bar">
+    <div>步數：<span id="moves">0</span></div>
     <button id="restart">重新開始</button>
 </div>
 
 <div class="game">
 
-    <!-- 上方牌區 -->
-    <div class="top">
+    <!-- 上方 -->
+    <div class="top-area">
 
-        <div class="left-top">
-            <div id="stockArea"></div>
-            <div id="wasteArea"></div>
+        <!-- 牌庫 -->
+        <div id="stock" class="pile stock">
+            <div class="placeholder">🂠</div>
         </div>
 
-        <div class="right-top" id="foundationArea"></div>
+        <!-- 棄牌 -->
+        <div id="waste" class="pile waste">
+            <div class="placeholder">♥</div>
+        </div>
+
+        <div></div>
+
+        <!-- 四個基礎牌堆 -->
+        <div id="foundation0" class="pile foundation"></div>
+        <div id="foundation1" class="pile foundation"></div>
+        <div id="foundation2" class="pile foundation"></div>
+        <div id="foundation3" class="pile foundation"></div>
 
     </div>
 
     <!-- 七欄 -->
     <div id="tableau" class="tableau"></div>
 
-    <div id="message" class="message"></div>
-
 </div>
 
 <script>
 
-/* =========================================
-   基本資料
-========================================= */
-
 const SUITS = [
-    { symbol: "♠", color: "black" },
-    { symbol: "♥", color: "red" },
-    { symbol: "♦", color: "red" },
-    { symbol: "♣", color: "black" }
+    {
+        symbol: "♠",
+        color: "black",
+        name: "黑桃"
+    },
+    {
+        symbol: "♥",
+        color: "red",
+        name: "紅心"
+    },
+    {
+        symbol: "♦",
+        color: "red",
+        name: "方塊"
+    },
+    {
+        symbol: "♣",
+        color: "black",
+        name: "梅花"
+    }
 ];
 
 const RANKS = [
-    "",
-    "A",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "J",
-    "Q",
-    "K"
+    "A", "2", "3", "4", "5", "6", "7",
+    "8", "9", "10", "J", "Q", "K"
 ];
 
 let stock = [];
 let waste = [];
+let foundations = [[], [], [], []];
+let tableau = [[], [], [], [], [], [], []];
 
-let tableau = [
-    [], [], [], [], [], [], []
-];
-
-let foundation = [
-    [], [], [], []
-];
-
-let selected = null;
 let moves = 0;
 
+/*
+    selected：
+    type = tableau / waste
+    column = 第幾欄
+    index = 從哪一張開始
+*/
+let selected = null;
 
-/* =========================================
+
+/* =========================
    建立牌
-========================================= */
+========================= */
 
 function createDeck() {
 
@@ -428,29 +340,28 @@ function createDeck() {
 
     for (let suit = 0; suit < 4; suit++) {
 
-        for (let value = 1; value <= 13; value++) {
+        for (let rank = 1; rank <= 13; rank++) {
 
             deck.push({
-                id: Math.random().toString(36) + Date.now() + suit + value,
+                id: `${suit}-${rank}`,
                 suit: suit,
-                value: value,
-                rank: RANKS[value],
+                rank: rank,
+                text: RANKS[rank - 1],
                 symbol: SUITS[suit].symbol,
                 color: SUITS[suit].color,
                 faceUp: false
             });
 
         }
-
     }
 
     return deck;
 }
 
 
-/* =========================================
+/* =========================
    洗牌
-========================================= */
+========================= */
 
 function shuffle(deck) {
 
@@ -458,21 +369,16 @@ function shuffle(deck) {
 
         const j = Math.floor(Math.random() * (i + 1));
 
-        const temp = deck[i];
-
-        deck[i] = deck[j];
-
-        deck[j] = temp;
+        [deck[i], deck[j]] = [deck[j], deck[i]];
     }
-
 }
 
 
-/* =========================================
+/* =========================
    開始遊戲
-========================================= */
+========================= */
 
-function newGame() {
+function startGame() {
 
     let deck = createDeck();
 
@@ -480,736 +386,960 @@ function newGame() {
 
     stock = [];
     waste = [];
-
-    tableau = [
-        [], [], [], [], [], [], []
-    ];
-
-    foundation = [
-        [], [], [], []
-    ];
+    foundations = [[], [], [], []];
+    tableau = [[], [], [], [], [], [], []];
 
     selected = null;
-
     moves = 0;
 
+    let position = 0;
 
-    /* 發 7 欄 */
+    /*
+        7 欄：
+        第1欄 1張
+        第2欄 2張
+        ...
+        第7欄 7張
+    */
 
     for (let column = 0; column < 7; column++) {
 
         for (let row = 0; row <= column; row++) {
 
-            const card = deck.pop();
+            const card = deck[position++];
 
             card.faceUp = (row === column);
 
             tableau[column].push(card);
         }
-
     }
 
+    /* 剩下 24 張 */
+    while (position < deck.length) {
 
-    /* 剩餘 24 張 */
+        const card = deck[position++];
 
-    stock = deck;
+        card.faceUp = false;
 
+        stock.push(card);
+    }
 
     render();
-
-    message("請開始遊戲");
 }
 
 
-/* =========================================
-   建立牌面
-========================================= */
+/* =========================
+   顯示全部
+========================= */
 
-function makeCardElement(card, type, column, index) {
+function render() {
+
+    document.getElementById("moves").textContent = moves;
+
+    renderStock();
+    renderWaste();
+    renderFoundations();
+    renderTableau();
+}
+
+
+/* =========================
+   牌庫
+========================= */
+
+function renderStock() {
+
+    const el = document.getElementById("stock");
+
+    el.innerHTML = "";
+
+    if (stock.length === 0) {
+
+        el.innerHTML =
+            '<div class="placeholder">↻</div>';
+
+        return;
+    }
+
+    const card = document.createElement("div");
+
+    card.className = "card back";
+
+    el.appendChild(card);
+}
+
+
+/* =========================
+   棄牌區
+========================= */
+
+function renderWaste() {
+
+    const el = document.getElementById("waste");
+
+    el.innerHTML = "";
+
+    if (waste.length === 0) {
+
+        el.innerHTML =
+            '<div class="placeholder">♥</div>';
+
+        return;
+    }
+
+    const card = waste[waste.length - 1];
+
+    const cardEl = createCardElement(card);
+
+    if (
+        selected &&
+        selected.type === "waste"
+    ) {
+        cardEl.classList.add("selected");
+    }
+
+    el.appendChild(cardEl);
+}
+
+
+/* =========================
+   基礎牌堆
+========================= */
+
+function renderFoundations() {
+
+    for (let i = 0; i < 4; i++) {
+
+        const el =
+            document.getElementById(`foundation${i}`);
+
+        el.innerHTML = "";
+
+        if (foundations[i].length === 0) {
+
+            el.innerHTML =
+                `<div class="placeholder">${SUITS[i].symbol}</div>`;
+
+            continue;
+        }
+
+        const card =
+            foundations[i][foundations[i].length - 1];
+
+        el.appendChild(createCardElement(card));
+    }
+}
+
+
+/* =========================
+   七欄
+========================= */
+
+function renderTableau() {
+
+    const container =
+        document.getElementById("tableau");
+
+    container.innerHTML = "";
+
+    for (let column = 0; column < 7; column++) {
+
+        const columnEl =
+            document.createElement("div");
+
+        columnEl.className = "column";
+
+        const cards = tableau[column];
+
+        /*
+            空欄可以接 K
+        */
+        if (cards.length === 0) {
+
+            columnEl.addEventListener(
+                "click",
+                () => {
+
+                    if (selected) {
+                        tryMoveToTableau(column);
+                    }
+
+                }
+            );
+
+            container.appendChild(columnEl);
+
+            continue;
+        }
+
+        cards.forEach((card, index) => {
+
+            const cardEl =
+                createCardElement(card);
+
+            /*
+                背面牌距離小一點
+                正面牌距離大一點
+            */
+            const offset =
+                card.faceUp ? 31 : 20;
+
+            cardEl.style.top =
+                `${index * offset}px`;
+
+            cardEl.style.zIndex =
+                index + 1;
+
+            /*
+                如果目前選的是這個序列
+            */
+            if (
+                selected &&
+                selected.type === "tableau" &&
+                selected.column === column &&
+                index >= selected.index
+            ) {
+
+                cardEl.classList.add("selected");
+            }
+
+            cardEl.addEventListener(
+                "click",
+                function(event) {
+
+                    event.stopPropagation();
+
+                    handleTableauClick(
+                        column,
+                        index
+                    );
+                }
+            );
+
+            columnEl.appendChild(cardEl);
+        });
+
+        /*
+            點欄位空白位置
+        */
+        columnEl.addEventListener(
+            "click",
+            () => {
+
+                if (selected) {
+                    tryMoveToTableau(column);
+                }
+
+            }
+        );
+
+        container.appendChild(columnEl);
+    }
+}
+
+
+/* =========================
+   建立牌面
+========================= */
+
+function createCardElement(card) {
 
     const el = document.createElement("div");
 
     el.className = "card";
 
-    el.classList.add(card.color);
-
-    el.dataset.id = card.id;
-
-
-    /* 暗牌 */
-
+    /*
+        背面
+    */
     if (!card.faceUp) {
 
         el.classList.add("back");
 
-        el.addEventListener("click", function(event) {
+        return el;
+    }
 
-            event.stopPropagation();
+    el.classList.add(card.color);
 
-            if (
-                type === "tableau" &&
-                index === tableau[column].length - 1
-            ) {
+    /*
+        左上角
+    */
+    const corner =
+        document.createElement("div");
 
-                card.faceUp = true;
+    corner.className = "corner";
 
-                moves++;
+    corner.innerHTML =
+        `${card.text}<br>${card.symbol}`;
 
-                selected = null;
+    el.appendChild(corner);
 
-                render();
 
-            }
+    /*
+        A
+    */
+    if (card.rank === 1) {
 
-        });
+        const ace =
+            document.createElement("div");
+
+        ace.className = "ace-symbol";
+
+        ace.textContent =
+            card.symbol;
+
+        el.appendChild(ace);
 
         return el;
     }
 
 
-    /* 左上角 */
+    /*
+        J Q K
+    */
+    if (card.rank >= 11) {
 
-    const corner = document.createElement("div");
+        const face =
+            document.createElement("div");
 
-    corner.className = "corner";
+        face.className = "face-symbol";
 
-    corner.innerHTML =
-        '<div class="rank">' +
-        card.rank +
-        '</div>' +
-        '<div class="suit-small">' +
-        card.symbol +
-        '</div>';
+        face.textContent =
+            card.text + card.symbol;
 
-    el.appendChild(corner);
+        el.appendChild(face);
 
-
-    /* A */
-
-    if (card.value === 1) {
-
-        const ace = document.createElement("div");
-
-        ace.className = "ace";
-
-        ace.textContent = card.symbol;
-
-        el.appendChild(ace);
-
+        return el;
     }
 
 
-    /* 2～10 */
+    /*
+        2～10
+    */
+    const pips =
+        document.createElement("div");
 
-    else if (card.value >= 2 && card.value <= 10) {
+    pips.className = "pips";
 
-        const pips = document.createElement("div");
 
-        pips.className = "pips";
+    /*
+        固定每個數字的花色位置
+        不使用重疊定位
+    */
 
-        const pattern = getPips(card.value);
+    const positions = {
 
-        pattern.forEach(pos => {
+        2: [1, 5],
 
-            const pip = document.createElement("div");
+        3: [1, 3, 5],
+
+        4: [0, 1, 5, 6],
+
+        5: [0, 1, 3, 5, 6],
+
+        6: [0, 1, 2, 4, 5, 6],
+
+        7: [0, 1, 2, 3, 4, 5, 6],
+
+        8: [0, 1, 2, 3, 4, 5, 6, 7],
+
+        9: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+
+        10: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    };
+
+
+    const slots =
+        positions[card.rank];
+
+
+    slots.forEach(
+        (slot, i) => {
+
+            const pip =
+                document.createElement("span");
 
             pip.className = "pip";
 
-            pip.textContent = card.symbol;
+            pip.textContent =
+                card.symbol;
 
-            pip.style.gridColumn = pos.col;
+            /*
+                置中花色
+            */
+            if (
+                (card.rank === 3 && slot === 3) ||
+                (card.rank === 5 && slot === 3) ||
+                (card.rank === 7 && slot === 3) ||
+                (card.rank === 9 && slot === 4)
+            ) {
+                pip.classList.add("middle");
+            }
 
-            pip.style.gridRow = pos.row;
+            /*
+                使用固定 grid 位置
+            */
+            if (card.rank === 2) {
+                pip.style.gridRow =
+                    i === 0 ? "1" : "5";
+                pip.style.gridColumn =
+                    "1 / 3";
+            }
+
+            else if (card.rank === 3) {
+                pip.style.gridRow =
+                    i === 0 ? "1" :
+                    i === 1 ? "3" : "5";
+                pip.style.gridColumn =
+                    "1 / 3";
+            }
+
+            else if (card.rank === 4) {
+                const positions4 = [
+                    [1,1],
+                    [1,2],
+                    [5,1],
+                    [5,2]
+                ];
+
+                pip.style.gridRow =
+                    positions4[i][0];
+
+                pip.style.gridColumn =
+                    positions4[i][1];
+            }
+
+            else if (card.rank === 5) {
+                const positions5 = [
+                    [1,1],
+                    [1,2],
+                    [3,1],
+                    [5,1],
+                    [5,2]
+                ];
+
+                pip.style.gridRow =
+                    positions5[i][0];
+
+                pip.style.gridColumn =
+                    positions5[i][1];
+
+                if (i === 2) {
+                    pip.style.gridColumn =
+                        "1 / 3";
+                }
+            }
+
+            else if (card.rank === 6) {
+                const positions6 = [
+                    [1,1],
+                    [1,2],
+                    [3,1],
+                    [3,2],
+                    [5,1],
+                    [5,2]
+                ];
+
+                pip.style.gridRow =
+                    positions6[i][0];
+
+                pip.style.gridColumn =
+                    positions6[i][1];
+            }
+
+            else if (card.rank === 7) {
+                const positions7 = [
+                    [1,1],
+                    [1,2],
+                    [2,1],
+                    [2,2],
+                    [4,1],
+                    [4,2],
+                    [5,1]
+                ];
+
+                pip.style.gridRow =
+                    positions7[i][0];
+
+                pip.style.gridColumn =
+                    positions7[i][1];
+
+                if (i === 6) {
+                    pip.style.gridColumn =
+                        "1 / 3";
+                }
+            }
+
+            else if (card.rank === 8) {
+                const positions8 = [
+                    [1,1],
+                    [1,2],
+                    [2,1],
+                    [2,2],
+                    [4,1],
+                    [4,2],
+                    [5,1],
+                    [5,2]
+                ];
+
+                pip.style.gridRow =
+                    positions8[i][0];
+
+                pip.style.gridColumn =
+                    positions8[i][1];
+            }
+
+            else if (card.rank === 9) {
+                const positions9 = [
+                    [1,1],
+                    [1,2],
+                    [2,1],
+                    [2,2],
+                    [3,1],
+                    [4,1],
+                    [4,2],
+                    [5,1],
+                    [5,2]
+                ];
+
+                pip.style.gridRow =
+                    positions9[i][0];
+
+                pip.style.gridColumn =
+                    positions9[i][1];
+
+                if (i === 4) {
+                    pip.style.gridColumn =
+                        "1 / 3";
+                }
+            }
+
+            else if (card.rank === 10) {
+                const positions10 = [
+                    [1,1],
+                    [1,2],
+                    [2,1],
+                    [2,2],
+                    [3,1],
+                    [3,2],
+                    [4,1],
+                    [4,2],
+                    [5,1],
+                    [5,2]
+                ];
+
+                pip.style.gridRow =
+                    positions10[i][0];
+
+                pip.style.gridColumn =
+                    positions10[i][1];
+            }
 
             pips.appendChild(pip);
+        }
+    );
 
-        });
-
-        el.appendChild(pips);
-
-    }
-
-
-    /* J Q K */
-
-    else {
-
-        const face = document.createElement("div");
-
-        face.className = "face";
-
-        const rank = document.createElement("div");
-
-        rank.className = "face-rank";
-
-        rank.textContent = card.rank;
-
-        const suit = document.createElement("div");
-
-        suit.className = "face-suit";
-
-        suit.textContent = card.symbol;
-
-        face.appendChild(rank);
-
-        face.appendChild(suit);
-
-        el.appendChild(face);
-    }
-
-
-    /* 選取狀態 */
-
-    if (
-        selected &&
-        selected.type === "tableau" &&
-        selected.column === column &&
-        index >= selected.index
-    ) {
-
-        el.classList.add("selected");
-
-    }
-
-
-    /* 點擊 */
-
-    el.addEventListener("click", function(event) {
-
-        event.stopPropagation();
-
-        cardClick(type, column, index);
-
-    });
-
+    el.appendChild(pips);
 
     return el;
 }
 
 
-/* =========================================
-   2～10 花色位置
-========================================= */
+/* =========================
+   判斷紅黑
+========================= */
 
-function getPips(value) {
+function oppositeColor(card1, card2) {
 
-    const L = "1";
-    const R = "2";
-
-    const result = [];
-
-    function add(row, col) {
-
-        result.push({
-            row: String(row),
-            col: col === L ? "1" : "2"
-        });
-
-    }
-
-
-    if (value === 2) {
-
-        add(1, L);
-        add(5, R);
-
-    }
-
-    else if (value === 3) {
-
-        add(1, L);
-        add(3, "1");
-        add(5, R);
-
-    }
-
-    else if (value === 4) {
-
-        add(1, L);
-        add(1, R);
-        add(5, L);
-        add(5, R);
-
-    }
-
-    else if (value === 5) {
-
-        add(1, L);
-        add(1, R);
-        add(3, "1");
-        add(5, L);
-        add(5, R);
-
-    }
-
-    else if (value === 6) {
-
-        add(1, L);
-        add(1, R);
-        add(3, L);
-        add(3, R);
-        add(5, L);
-        add(5, R);
-
-    }
-
-    else if (value === 7) {
-
-        add(1, L);
-        add(1, R);
-        add(2, L);
-        add(2, R);
-        add(3, "1");
-        add(4, L);
-        add(4, R);
-
-    }
-
-    else if (value === 8) {
-
-        add(1, L);
-        add(1, R);
-        add(2, L);
-        add(2, R);
-        add(4, L);
-        add(4, R);
-        add(5, L);
-        add(5, R);
-
-    }
-
-    else if (value === 9) {
-
-        add(1, L);
-        add(1, R);
-        add(2, L);
-        add(2, R);
-        add(3, "1");
-        add(4, L);
-        add(4, R);
-        add(5, L);
-        add(5, R);
-
-    }
-
-    else if (value === 10) {
-
-        add(1, L);
-        add(1, R);
-        add(2, L);
-        add(2, R);
-        add(3, L);
-        add(3, R);
-        add(4, L);
-        add(4, R);
-        add(5, L);
-        add(5, R);
-
-    }
-
-    return result;
+    return card1.color !== card2.color;
 }
 
 
-/* =========================================
-   點擊牌
-========================================= */
+/* =========================
+   判斷連續牌組是否合法
+========================= */
 
-function cardClick(type, column, index) {
+function validSequence(cards) {
 
-
-    /* 廢牌 */
-
-    if (type === "waste") {
-
-        if (waste.length === 0) return;
-
-        if (
-            selected &&
-            selected.type === "waste"
-        ) {
-
-            selected = null;
-
-            render();
-
-            return;
-        }
-
-        selected = {
-            type: "waste"
-        };
-
-        render();
-
-        return;
+    if (cards.length === 0) {
+        return false;
     }
 
-
-    /* 桌面牌 */
-
-    const col = tableau[column];
-
-    const card = col[index];
-
-
-    /* 暗牌 */
-
-    if (!card.faceUp) {
-
-        if (index === col.length - 1) {
-
-            card.faceUp = true;
-
-            moves++;
-
-            render();
-
-        }
-
-        return;
+    if (!cards[0].faceUp) {
+        return false;
     }
 
+    for (let i = 0; i < cards.length - 1; i++) {
 
-    /* 已選牌 */
+        const current = cards[i];
+        const next = cards[i + 1];
 
-    if (selected) {
-
-        moveSelected(column);
-
-        return;
-    }
-
-
-    /* 選取牌組 */
-
-    if (validSequence(column, index)) {
-
-        selected = {
-            type: "tableau",
-            column: column,
-            index: index
-        };
-
-        render();
-
-    }
-
-}
-
-
-/* =========================================
-   檢查一串牌
-========================================= */
-
-function validSequence(column, start) {
-
-    const col = tableau[column];
-
-    for (let i = start; i < col.length; i++) {
-
-        if (!col[i].faceUp) {
-
+        if (!current.faceUp || !next.faceUp) {
             return false;
         }
 
-        if (i > start) {
+        /*
+            例如：
+            8黑 → 7紅 → 6黑
+        */
 
-            const previous = col[i - 1];
-
-            const current = col[i];
-
-            if (
-                previous.value !== current.value + 1 ||
-                previous.color === current.color
-            ) {
-
-                return false;
-            }
-
+        if (
+            current.rank !== next.rank + 1
+        ) {
+            return false;
         }
 
+        if (
+            !oppositeColor(current, next)
+        ) {
+            return false;
+        }
     }
 
     return true;
 }
 
 
-/* =========================================
-   移動選取牌
-========================================= */
+/* =========================
+   判斷能否放到另一欄
+========================= */
 
-function moveSelected(targetColumn) {
+function canPlaceOnTableau(
+    movingCard,
+    targetColumn
+) {
 
-    if (!selected) return;
+    const target =
+        tableau[targetColumn];
 
-
-    /* 從廢牌 */
-
-    if (selected.type === "waste") {
-
-        if (waste.length === 0) return;
-
-        const moving = waste[waste.length - 1];
-
-        if (!canPlace(moving, targetColumn)) {
-
-            selected = null;
-
-            render();
-
-            return;
-        }
-
-        waste.pop();
-
-        tableau[targetColumn].push(moving);
-
-        moves++;
-
-        selected = null;
-
-        render();
-
-        return;
-    }
-
-
-    /* 從桌面 */
-
-    if (selected.type === "tableau") {
-
-        const sourceColumn = selected.column;
-
-        if (sourceColumn === targetColumn) {
-
-            selected = null;
-
-            render();
-
-            return;
-        }
-
-
-        const source = tableau[sourceColumn];
-
-        const moving = source.slice(selected.index);
-
-
-        if (!canPlace(moving[0], targetColumn)) {
-
-            selected = null;
-
-            render();
-
-            return;
-        }
-
-
-        source.splice(
-            selected.index,
-            moving.length
-        );
-
-
-        tableau[targetColumn].push(...moving);
-
-
-        /* 翻開來源最後一張 */
-
-        if (source.length > 0) {
-
-            const last =
-                source[source.length - 1];
-
-            if (!last.faceUp) {
-
-                last.faceUp = true;
-
-            }
-
-        }
-
-
-        moves++;
-
-        selected = null;
-
-        render();
-
-    }
-
-}
-
-
-/* =========================================
-   判斷能否放到欄位
-========================================= */
-
-function canPlace(card, targetColumn) {
-
-    const target = tableau[targetColumn];
-
-
-    /* 空欄只能 K */
-
+    /*
+        空欄只能放 K
+    */
     if (target.length === 0) {
 
-        return card.value === 13;
+        return movingCard.rank === 13;
     }
-
 
     const top =
         target[target.length - 1];
 
-
     if (!top.faceUp) {
-
         return false;
     }
 
-
     return (
-        top.color !== card.color &&
-        top.value === card.value + 1
+        oppositeColor(
+            movingCard,
+            top
+        ) &&
+        movingCard.rank === top.rank - 1
     );
 }
 
 
-/* =========================================
-   收牌
-========================================= */
+/* =========================
+   點擊七欄
+========================= */
 
-function foundationClick(suitIndex) {
+function handleTableauClick(
+    column,
+    index
+) {
 
-    if (!selected) return;
+    /*
+        已經選牌
+        → 嘗試移動
+    */
+    if (selected) {
 
-
-    let card = null;
-
-
-    /* 廢牌 */
-
-    if (selected.type === "waste") {
-
-        if (waste.length === 0) return;
-
-        card = waste[waste.length - 1];
-
-    }
-
-
-    /* 桌面 */
-
-    else {
-
-        const col =
-            tableau[selected.column];
-
+        /*
+            如果是七欄牌組
+        */
         if (
-            selected.index !==
-            col.length - 1
+            selected.type === "tableau"
         ) {
 
-            message("收牌區一次只能放一張牌");
+            const sourceColumn =
+                selected.column;
+
+            const sourceIndex =
+                selected.index;
+
+            /*
+                點自己
+                → 取消
+            */
+            if (
+                sourceColumn === column &&
+                index >= sourceIndex
+            ) {
+
+                selected = null;
+
+                render();
+
+                return;
+            }
+
+            tryMoveToTableau(column);
 
             return;
         }
 
-        card = col[col.length - 1];
 
+        /*
+            Waste → 七欄
+        */
+        if (
+            selected.type === "waste"
+        ) {
+
+            tryMoveToTableau(column);
+
+            return;
+        }
     }
 
 
-    if (card.suit !== suitIndex) {
+    /*
+        沒有選牌
+    */
 
-        message("花色必須相同");
+    if (
+        index === null ||
+        index >= tableau[column].length
+    ) {
+        return;
+    }
+
+    const card =
+        tableau[column][index];
+
+
+    /*
+        點到背面牌
+        只有最下面那張可以翻
+    */
+    if (!card.faceUp) {
+
+        if (
+            index ===
+            tableau[column].length - 1
+        ) {
+
+            card.faceUp = true;
+
+            moves++;
+
+            render();
+        }
 
         return;
     }
 
 
-    const pile =
-        foundation[suitIndex];
+    /*
+        從這張開始往下
+        必須是一個合法連續牌組
+    */
+    const movingCards =
+        tableau[column].slice(index);
 
-
-    if (pile.length === 0) {
-
-        if (card.value !== 1) {
-
-            message("收牌區必須從 A 開始");
-
-            return;
-        }
-
+    if (
+        !validSequence(movingCards)
+    ) {
+        return;
     }
 
-    else {
-
-        const top =
-            pile[pile.length - 1];
-
-        if (
-            card.value !==
-            top.value + 1
-        ) {
-
-            message("必須按照 A、2、3……K 排列");
-
-            return;
-        }
-
-    }
-
-
-    /* 移除 */
-
-    if (selected.type === "waste") {
-
-        waste.pop();
-
-    }
-
-    else {
-
-        const col =
-            tableau[selected.column];
-
-        col.pop();
-
-        if (col.length > 0) {
-
-            col[col.length - 1].faceUp = true;
-
-        }
-
-    }
-
-
-    pile.push(card);
-
-    moves++;
-
-    selected = null;
+    selected = {
+        type: "tableau",
+        column: column,
+        index: index
+    };
 
     render();
-
-    checkWin();
 }
 
 
-/* =========================================
-   抽牌
-========================================= */
+/* =========================
+   移動到七欄
+========================= */
+
+function tryMoveToTableau(
+    targetColumn
+) {
+
+    /*
+        七欄 → 七欄
+    */
+    if (
+        selected &&
+        selected.type === "tableau"
+    ) {
+
+        const sourceColumn =
+            selected.column;
+
+        const sourceIndex =
+            selected.index;
+
+        if (
+            sourceColumn === targetColumn
+        ) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+        const movingCards =
+            tableau[sourceColumn].slice(
+                sourceIndex
+            );
+
+        if (
+            !validSequence(movingCards)
+        ) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+        if (
+            !canPlaceOnTableau(
+                movingCards[0],
+                targetColumn
+            )
+        ) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+        /*
+            從原欄移除
+        */
+        tableau[sourceColumn].splice(
+            sourceIndex,
+            movingCards.length
+        );
+
+        /*
+            放入目標欄
+        */
+        tableau[targetColumn].push(
+            ...movingCards
+        );
+
+        /*
+            原欄最後一張翻面
+        */
+        flipLastCard(sourceColumn);
+
+        moves++;
+
+        selected = null;
+
+        render();
+
+        checkWin();
+
+        return;
+    }
+
+
+    /*
+        Waste → 七欄
+    */
+    if (
+        selected &&
+        selected.type === "waste"
+    ) {
+
+        if (waste.length === 0) {
+            selected = null;
+            render();
+            return;
+        }
+
+        const card =
+            waste[waste.length - 1];
+
+        if (
+            !canPlaceOnTableau(
+                card,
+                targetColumn
+            )
+        ) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+        waste.pop();
+
+        tableau[targetColumn].push(
+            card
+        );
+
+        moves++;
+
+        selected = null;
+
+        render();
+
+        checkWin();
+    }
+}
+
+
+/* =========================
+   翻開最後一張
+========================= */
+
+function flipLastCard(column) {
+
+    const cards =
+        tableau[column];
+
+    if (cards.length === 0) {
+        return;
+    }
+
+    const last =
+        cards[cards.length - 1];
+
+    if (!last.faceUp) {
+        last.faceUp = true;
+    }
+}
+
+
+/* =========================
+   牌庫
+========================= */
 
 function drawStock() {
 
     selected = null;
 
-
+    /*
+        還有牌
+    */
     if (stock.length > 0) {
 
-        const card = stock.pop();
+        const card =
+            stock.pop();
 
         card.faceUp = true;
 
@@ -1217,365 +1347,334 @@ function drawStock() {
 
         moves++;
 
+        render();
+
+        return;
     }
 
-    else if (waste.length > 0) {
+
+    /*
+        牌庫空了
+        → 棄牌重新變成牌庫
+    */
+    if (waste.length > 0) {
 
         while (waste.length > 0) {
 
-            const card = waste.pop();
+            const card =
+                waste.pop();
 
             card.faceUp = false;
 
             stock.push(card);
-
         }
 
         moves++;
 
+        render();
+    }
+}
+
+
+/* =========================
+   點擊 Waste
+========================= */
+
+function handleWasteClick() {
+
+    if (waste.length === 0) {
+        return;
     }
 
+    if (
+        selected &&
+        selected.type === "waste"
+    ) {
+
+        selected = null;
+
+        render();
+
+        return;
+    }
+
+    selected = {
+        type: "waste"
+    };
 
     render();
 }
 
 
-/* =========================================
-   Render
-========================================= */
+/* =========================
+   Foundation 規則
+========================= */
 
-function render() {
+function canPlaceOnFoundation(
+    card,
+    foundationIndex
+) {
 
-    document.getElementById("moves").textContent =
-        moves;
-
-    document.getElementById("stockCount").textContent =
-        stock.length;
-
-
-    /* -------------------------
-       牌庫
-    ------------------------- */
-
-    const stockArea =
-        document.getElementById("stockArea");
-
-    stockArea.innerHTML = "";
-
-
-    if (stock.length > 0) {
-
-        const stockCard =
-            document.createElement("div");
-
-        stockCard.className =
-            "card back";
-
-        stockCard.onclick =
-            drawStock;
-
-        stockArea.appendChild(stockCard);
-
+    /*
+        花色一定要相同
+    */
+    if (
+        card.suit !== foundationIndex
+    ) {
+        return false;
     }
-    else {
 
-        const empty =
-            document.createElement("div");
+    const foundation =
+        foundations[foundationIndex];
 
-        empty.className =
-            "empty";
 
-        empty.textContent = "↻";
+    /*
+        第一張必須是 A
+    */
+    if (
+        foundation.length === 0
+    ) {
 
-        empty.onclick =
-            drawStock;
-
-        stockArea.appendChild(empty);
-
+        return card.rank === 1;
     }
 
 
-    /* -------------------------
-       廢牌
-    ------------------------- */
+    /*
+        後面必須 +1
+        A → 2 → 3 → ... → K
+    */
+    const top =
+        foundation[
+            foundation.length - 1
+        ];
 
-    const wasteArea =
-        document.getElementById("wasteArea");
+    return (
+        card.rank === top.rank + 1
+    );
+}
 
-    wasteArea.innerHTML = "";
+
+/* =========================
+   將牌放入 Foundation
+========================= */
+
+function moveToFoundation(
+    foundationIndex
+) {
+
+    if (!selected) {
+        return;
+    }
 
 
-    if (waste.length > 0) {
+    /*
+        Waste → Foundation
+    */
+    if (
+        selected.type === "waste"
+    ) {
+
+        if (waste.length === 0) {
+            return;
+        }
 
         const card =
             waste[waste.length - 1];
 
-        wasteArea.appendChild(
-            makeCardElement(
+        if (
+            !canPlaceOnFoundation(
                 card,
-                "waste",
-                0,
-                waste.length - 1
+                foundationIndex
             )
-        );
-
-    }
-    else {
-
-        const empty =
-            document.createElement("div");
-
-        empty.className =
-            "empty";
-
-        wasteArea.appendChild(empty);
-
-    }
-
-
-    /* -------------------------
-       收牌區
-    ------------------------- */
-
-    const foundationArea =
-        document.getElementById("foundationArea");
-
-    foundationArea.innerHTML = "";
-
-
-    for (let suit = 0; suit < 4; suit++) {
-
-        const box =
-            document.createElement("div");
-
-        box.className = "slot";
-
-        box.onclick = function(event) {
-
-            event.stopPropagation();
-
-            foundationClick(suit);
-
-        };
-
-
-        const pile =
-            foundation[suit];
-
-
-        if (pile.length === 0) {
-
-            const empty =
-                document.createElement("div");
-
-            empty.className =
-                "empty";
-
-            empty.textContent =
-                SUITS[suit].symbol;
-
-            box.appendChild(empty);
-
-        }
-        else {
-
-            const card =
-                pile[pile.length - 1];
-
-            box.appendChild(
-                makeCardElement(
-                    card,
-                    "foundation",
-                    suit,
-                    pile.length - 1
-                )
-            );
-
-        }
-
-
-        foundationArea.appendChild(box);
-
-    }
-
-
-    /* -------------------------
-       七欄
-    ------------------------- */
-
-    const tableauElement =
-        document.getElementById("tableau");
-
-    tableauElement.innerHTML = "";
-
-
-    for (
-        let column = 0;
-        column < 7;
-        column++
-    ) {
-
-        const columnElement =
-            document.createElement("div");
-
-        columnElement.className =
-            "column";
-
-
-        const cards =
-            tableau[column];
-
-
-        if (cards.length === 0) {
-
-            const empty =
-                document.createElement("div");
-
-            empty.className =
-                "empty";
-
-            empty.textContent = "K";
-
-            empty.onclick = function(event) {
-
-                event.stopPropagation();
-
-                if (selected) {
-
-                    moveSelected(column);
-
-                }
-
-            };
-
-            columnElement.appendChild(empty);
-
-        }
-
-
-        for (
-            let index = 0;
-            index < cards.length;
-            index++
         ) {
 
-            const card =
-                cards[index];
+            selected = null;
 
-            const cardElement =
-                makeCardElement(
-                    card,
-                    "tableau",
-                    column,
-                    index
-                );
+            render();
 
-
-            cardElement.classList.add(
-                "column-card"
-            );
-
-
-            /*
-                暗牌距離較小，
-                明牌距離較大，
-                讓牌面可以清楚看到。
-            */
-
-            let top = 0;
-
-            for (
-                let i = 0;
-                i < index;
-                i++
-            ) {
-
-                if (cards[i].faceUp) {
-
-                    top += 30;
-
-                }
-                else {
-
-                    top += 18;
-
-                }
-
-            }
-
-
-            cardElement.style.top =
-                top + "px";
-
-
-            columnElement.appendChild(
-                cardElement
-            );
-
+            return;
         }
 
+        waste.pop();
 
-        tableauElement.appendChild(
-            columnElement
-        );
+        foundations[
+            foundationIndex
+        ].push(card);
 
+        moves++;
+
+        selected = null;
+
+        render();
+
+        checkWin();
+
+        return;
     }
 
+
+    /*
+        Tableau → Foundation
+    */
+    if (
+        selected.type === "tableau"
+    ) {
+
+        const sourceColumn =
+            selected.column;
+
+        const sourceIndex =
+            selected.index;
+
+        const cards =
+            tableau[sourceColumn];
+
+        /*
+            Foundation 一次只能放一張
+        */
+        if (
+            sourceIndex !==
+            cards.length - 1
+        ) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+        const card =
+            cards[sourceIndex];
+
+        if (!card.faceUp) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+        if (
+            !canPlaceOnFoundation(
+                card,
+                foundationIndex
+            )
+        ) {
+
+            selected = null;
+
+            render();
+
+            return;
+        }
+
+        /*
+            從七欄移除
+        */
+        tableau[sourceColumn].pop();
+
+        /*
+            放入 Foundation
+        */
+        foundations[
+            foundationIndex
+        ].push(card);
+
+        /*
+            翻開下一張
+        */
+        flipLastCard(sourceColumn);
+
+        moves++;
+
+        selected = null;
+
+        render();
+
+        checkWin();
+    }
 }
 
 
-/* =========================================
-   勝利
-========================================= */
+/* =========================
+   點擊四個 Foundation
+========================= */
+
+for (let i = 0; i < 4; i++) {
+
+    document
+        .getElementById(`foundation${i}`)
+        .addEventListener(
+            "click",
+            function(event) {
+
+                event.stopPropagation();
+
+                moveToFoundation(i);
+            }
+        );
+}
+
+
+/* =========================
+   綁定按鈕
+========================= */
+
+document
+    .getElementById("stock")
+    .addEventListener(
+        "click",
+        drawStock
+    );
+
+document
+    .getElementById("waste")
+    .addEventListener(
+        "click",
+        handleWasteClick
+    );
+
+document
+    .getElementById("restart")
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+
+/* =========================
+   勝利判斷
+========================= */
 
 function checkWin() {
 
     let total = 0;
 
-    for (const pile of foundation) {
-
-        total += pile.length;
-
+    for (let i = 0; i < 4; i++) {
+        total += foundations[i].length;
     }
 
     if (total === 52) {
 
-        message(
-            "🎉 恭喜！你完成了整副接龍！"
+        setTimeout(
+            () => {
+                alert(
+                    "🎉 恭喜你！完成經典接龍！"
+                );
+            },
+            100
         );
-
     }
-
 }
 
 
-/* =========================================
-   訊息
-========================================= */
+/* =========================
+   開始
+========================= */
 
-function message(text) {
-
-    document.getElementById(
-        "message"
-    ).textContent = text;
-
-}
-
-
-/* =========================================
-   重新開始
-========================================= */
-
-document.getElementById(
-    "restart"
-).onclick = newGame;
-
-
-/* =========================================
-   啟動
-========================================= */
-
-newGame();
+startGame();
 
 </script>
 
